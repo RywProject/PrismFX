@@ -94,3 +94,12 @@ Blockly.JavaScript['prismfx.image'] = function(block) {
 	var img = block.getFieldValue("img");
 	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').drawImage(' + x + ',' + y + ',' + img +');\n';
 };
+
+Blockly.JavaScript['prismfx.ColorRGB'] = function(block) {
+//	var fore = Blockly.JavaScript.valueToCode(block, 'Fore', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0xffffff';	// default white
+	let red  =  Blockly.JavaScript.valueToCode(block, 'Red'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	let green  = Blockly.JavaScript.valueToCode(block, 'Blue'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	let blue  = Blockly.JavaScript.valueToCode(block, 'Green'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	let num = Number(red) + Number(green) + Number(blue);
+	return [num, Blockly.JavaScript.ORDER_ATOMIC];
+};

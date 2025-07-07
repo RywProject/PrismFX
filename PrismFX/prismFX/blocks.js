@@ -246,3 +246,15 @@ Blockly.Blocks['prismfx.image'] = {
 	  this.setTooltip(Blockly.Msg.PRISMFX_IMAGE_TOOLTIP);
 	  this.setHelpUrl(Blockly.Msg.PRISMFX_IMAGE_HELPURL);
   }};
+  Blockly.Blocks['prismfx.ColorRGB'] = {
+	init: function() {
+	  this.appendDummyInput().appendField(Blockly.Msg.PRISMFX_RGB_TITLE);
+	  this.appendValueInput("Red").setCheck("Number").appendField(Blockly.Msg.PRISMFX_Red);
+	  this.appendValueInput("Green").setCheck("Number").appendField(Blockly.Msg.PRISMFX_Green);
+	  this.appendValueInput("Blue").setCheck("Number").appendField(Blockly.Msg.PRISMFX_Blue);
+	  this.setInputsInline(true);
+	  this.setOutput(true, "Number");
+	  this.setColour(150);
+	  this.setTooltip(Blockly.Msg.PRISMFX_RGB_TOOLTIP);
+	  this.setHelpUrl(Blockly.Msg.PRISMFX_RGB_HELPURL);
+  }};
