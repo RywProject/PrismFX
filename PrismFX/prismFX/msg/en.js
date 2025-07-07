@@ -44,6 +44,13 @@ Blockly.Msg.PRISMFX_LINE_TITLE      = "Draw Line:";
 Blockly.Msg.PRISMFX_LINE_TOOLTIP    = "Plot a line from (x1,y1) to (x2,y2)";
 Blockly.Msg.PRISMFX_LINE_HELPURL    = "";
 
+Blockly.Msg.PRISMFX_RGB_TITLE      = "Color:";
+Blockly.Msg.PRISMFX_RGB_TOOLTIP    = "Select Color";
+Blockly.Msg.PRISMFX_RGB_HELPURL    = "";
+Blockly.Msg.PRISMFX_Red              = "Red (0-255)";
+Blockly.Msg.PRISMFX_Green            = "Green (0-255)";
+Blockly.Msg.PRISMFX_Blue              = "Blue (0-255)";
+
 Blockly.Msg.PRISMFX_RECT_TITLE      = "Draw Rectangle:";
 Blockly.Msg.PRISMFX_RECT_TOOLTIP    = "Plot a rectangle from upper left corner (x1,y1) to lowwr right corner (x2,y2)";
 Blockly.Msg.PRISMFX_RECT_HELPURL    = "";
