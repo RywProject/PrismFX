@@ -82,7 +82,7 @@ Blockly.Msg.PRISMFX_PLOT_units          = "Units";
 Blockly.Msg.PRISMFX_PLOT_plotMin        = "Minimum";
 Blockly.Msg.PRISMFX_PLOT_plotMax        = "Maximum";
 Blockly.Msg.PRISMFX_PLOT_decimals       = "Decimals";
-Blockly.Msg.PRISMFX_PLOT_INIT_TOOLTIP   = "For varible index (1-3)\nDefine variable name, units, and decimals desired (0-4).\nauto range if min or max are left emply (frequent refreshing)\nclipping occurs if min & max specified and value is out of range.";
+Blockly.Msg.PRISMFX_PLOT_INIT_TOOLTIP   = "For varible index (1-3)\nDefine variable name, units, and decimals desired (0-4).\nauto range if min or max are left empty (frequent refreshing)\nclipping occurs if min & max specified and value is out of range.";
 Blockly.Msg.PRISMFX_PLOT_INIT_HELPURL   = "";
 
 Blockly.Msg.PRISMFX_PLOT_DATA           = "Plot New Data:";
