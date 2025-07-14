@@ -52,7 +52,7 @@ Blockly.Msg.PRISMFX_Green            = "Green (0-255)";
 Blockly.Msg.PRISMFX_Blue              = "Blue (0-255)";
 
 Blockly.Msg.PRISMFX_RECT_TITLE      = "Draw Rectangle:";
-Blockly.Msg.PRISMFX_RECT_TOOLTIP    = "Plot a rectangle from upper left corner (x1,y1) to lowwr right corner (x2,y2)";
+Blockly.Msg.PRISMFX_RECT_TOOLTIP    = "Plot a rectangle from upper left corner (x1,y1) to lower right corner (x2,y2)";
 Blockly.Msg.PRISMFX_RECT_HELPURL    = "";
 
 Blockly.Msg.PRISMFX_TRIANGLE_TITLE  = "Draw Triangle:";
