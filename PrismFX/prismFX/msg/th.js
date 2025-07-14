@@ -20,10 +20,10 @@ Blockly.Msg.PRISMFX_Clear_Right     = "ข้างซ้าย 3 พิน";
 Blockly.Msg.PRISMFX_Clear_ToolTip   = "ตั้งแนวทางการจัดหน้าและเติมสีหน้าจอ";
 Blockly.Msg.PRISMFX_Clear_HelpURL   = "";
 
-Blockly.Msg.PRISMFX_TEXT_COLOR_TITLE        = "ตั้งสีของข้อความ:";
+Blockly.Msg.PRISMFX_TEXT_COLOR_TITLE        = "ลงสีของข้อความ:";
 Blockly.Msg.PRISMFX_TEXT_COLOR_Foreground   = "สีข้อความ";
 Blockly.Msg.PRISMFX_TEXT_COLOR_Background   = "สีพื้นหลัง";
-Blockly.Msg.PRISMFX_TEXT_COLOR_TOOLTIP      = "พิมพ์แบบโปร่งใสเมื่อสีเหมือนกัน (ช้า)";
+Blockly.Msg.PRISMFX_TEXT_COLOR_TOOLTIP      = "พิมพ์สีแบบโปร่งใสเมื่อสีเหมือนกัน (ช้า)";
 Blockly.Msg.PRISMFX_TEXT_COLOR_HELPURL      = "";
 
 Blockly.Msg.PRISMFX_PRINT_TITLE     = "พิมพ์:";
@@ -49,7 +49,7 @@ Blockly.Msg.PRISMFX_RGB_TOOLTIP    = "เลือกสี";
 Blockly.Msg.PRISMFX_RGB_HELPURL    = "";
 Blockly.Msg.PRISMFX_Red              = "แดง (0-255)";
 Blockly.Msg.PRISMFX_Green            = "เขียว (0-255)";
-Blockly.Msg.PRISMFX_Blue              = "ฟ้า (0-255)";
+Blockly.Msg.PRISMFX_Blue             = "ฟ้า (0-255)";
 
 Blockly.Msg.PRISMFX_RECT_TITLE      = "วาดสี่เหลี่ยมผืนผ้า:";
 Blockly.Msg.PRISMFX_RECT_TOOLTIP    = "วางสี่เหลี่ยมผืนผ้าจากมุมซ้ายบน (x1,y1) ถึง มุมขวาล่าง (x2,y2)";
