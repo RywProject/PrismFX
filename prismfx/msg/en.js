@@ -72,10 +72,10 @@ Blockly.Msg.PRISMFX_NUM2STR_hexadecimal = "Hexadecimal";
 Blockly.Msg.PRISMFX_NUM2STR_hexw0s      = "Hex with leading 0s";
 Blockly.Msg.PRISMFX_NUM2STR_fixed_point = "Fixed point";
 Blockly.Msg.PRISMFX_NUM2STR_exponential = "Exponential";
-Blockly.Msg.PRISMFX_NUM2STR_TOOLTIP     = "Convert a number to a formatted string\nValue: number to convert (default 0)\nWidth: output string length (default 6)\nDecimals: digits after decimal point (default 0)\nFormat: how to convert (default integer)"
+Blockly.Msg.PRISMFX_NUM2STR_TOOLTIP     = "Convert a number to a formatted string\nValue: number to convert (default 0)\nWidth: output string length (default 6)\nDecimals: digits after decimal point (default 0)\nFormat: how to convert (default integer)";
 Blockly.Msg.PRISMFX_NUM2STR_HELPURL     = "";
 
-Blockly.Msg.PRISMFX_PLOT_INIT           = "Init Plot:"
+Blockly.Msg.PRISMFX_PLOT_INIT           = "Init Plot:";
 Blockly.Msg.PRISMFX_PLOT_index          = "Index";
 Blockly.Msg.PRISMFX_PLOT_variable_name  = "Variable";
 Blockly.Msg.PRISMFX_PLOT_units          = "Units";
@@ -89,7 +89,7 @@ Blockly.Msg.PRISMFX_PLOT_DATA           = "Plot New Data:";
 Blockly.Msg.PRISMFX_PLOT_DATA1          = "var 1 data";
 Blockly.Msg.PRISMFX_PLOT_DATA2          = "var 2 data";
 Blockly.Msg.PRISMFX_PLOT_DATA3          = "var 3 data";
-Blockly.Msg.PRISMFX_PLOT_DATA_TOOLTIP   = "Append new data to the scatter plot"
+Blockly.Msg.PRISMFX_PLOT_DATA_TOOLTIP   = "Append new data to the scatter plot";
 Blockly.Msg.PRISMFX_PLOT_DATA_HELPURL   = "";
 
 Blockly.Msg.PRISMFX_IMAGE_TITLE         = "Draw Image:";

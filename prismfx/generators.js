@@ -1,13 +1,13 @@
 Blockly.JavaScript['prismfx.clear'] = function(block) {
 	var col = Blockly.JavaScript.valueToCode(block, 'COLOR' , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var rot = block.getFieldValue('Rotation');
-	return 'DEV_SPI.PrismFX('+block.getFieldValue('ADDRESS')+').clear('+rot+','+col+');\n';
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').clear('+rot+','+col+');\n';
 };
 
 Blockly.JavaScript['prismfx.setTextColor'] = function(block) {
 	var fore = Blockly.JavaScript.valueToCode(block, 'Fore', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0xffffff';	// default white
 	var back = Blockly.JavaScript.valueToCode(block, 'Back', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';			// default black
-	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').setTextColor(' + fore + ',' + back +');\n';
+	return 'DEV_SPI.PRISMFX(' + block.getFieldValue('ADDRESS') + ').setTextColor(' + fore + ',' + back +');\n';
 };
 
 Blockly.JavaScript['prismfx.print'] = function(block) {
@@ -15,14 +15,14 @@ Blockly.JavaScript['prismfx.print'] = function(block) {
 	var column = Blockly.JavaScript.valueToCode(block, 'Col', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var row = Blockly.JavaScript.valueToCode(block, 'Row', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var sz = block.getFieldValue('Size');
-	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').print(' + column + ',' + row + ',' + argument0 + ',' + sz +');\n';
+	return 'DEV_SPI.PRISMFX(' + block.getFieldValue('ADDRESS') + ').print(' + column + ',' + row + ',' + argument0 + ',' + sz +');\n';
 };
 
 Blockly.JavaScript['prismfx.point'] = function(block) {
 	var x1  = Blockly.JavaScript.valueToCode(block, 'X1'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var y1  = Blockly.JavaScript.valueToCode(block, 'Y1'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var col = Blockly.JavaScript.valueToCode(block, 'COLOR'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	return 'DEV_SPI.PrismFX('+block.getFieldValue('ADDRESS')+').point('+x1+','+y1+','+col+');\n';
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').point('+x1+','+y1+','+col+');\n';
 };
 
 Blockly.JavaScript['prismfx.line'] = function(block) {
@@ -31,7 +31,7 @@ Blockly.JavaScript['prismfx.line'] = function(block) {
 	var x2  = Blockly.JavaScript.valueToCode(block, 'X2'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var y2  = Blockly.JavaScript.valueToCode(block, 'Y2'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var col = Blockly.JavaScript.valueToCode(block, 'COLOR'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	return 'DEV_SPI.PrismFX('+block.getFieldValue('ADDRESS')+').line('+x1+','+y1+','+x2+','+y2+','+col+');\n';
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').line('+x1+','+y1+','+x2+','+y2+','+col+');\n';
 };
 
 Blockly.JavaScript['prismfx.rectangle'] = function(block) {
@@ -41,7 +41,7 @@ Blockly.JavaScript['prismfx.rectangle'] = function(block) {
 	var y2  = Blockly.JavaScript.valueToCode(block, 'Y2'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var col = Blockly.JavaScript.valueToCode(block, 'COLOR'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var fil = block.getFieldValue('Fill');
-	return 'DEV_SPI.PrismFX('+block.getFieldValue('ADDRESS')+').rectangle('+x1+','+y1+','+x2+','+y2+','+col+','+fil+');\n';
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').rectangle('+x1+','+y1+','+x2+','+y2+','+col+','+fil+');\n';
 };
 
 Blockly.JavaScript['prismfx.triangle'] = function(block) {
@@ -53,7 +53,7 @@ Blockly.JavaScript['prismfx.triangle'] = function(block) {
 	var y3  = Blockly.JavaScript.valueToCode(block, 'Y3'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var col = Blockly.JavaScript.valueToCode(block, 'COLOR'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var fil = block.getFieldValue('Fill');
-	return 'DEV_SPI.PrismFX('+block.getFieldValue('ADDRESS')+').triangle('+x1+','+y1+','+x2+','+y2+','+x3+','+y3+','+col+','+fil+');\n';
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').triangle('+x1+','+y1+','+x2+','+y2+','+x3+','+y3+','+col+','+fil+');\n';
 };
 	
 Blockly.JavaScript['prismfx.picker'] = function(block) {
@@ -67,7 +67,7 @@ Blockly.JavaScript['prismfx.num2str'] = function(block) {
 	var dec = block.getFieldValue("Decimals");
 	var wid = Blockly.JavaScript.valueToCode(block, 'Width', Blockly.JavaScript.ORDER_ASSIGNMENT) || '6';
 	var val = Blockly.JavaScript.valueToCode(block, 'Value', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	return ['PrismFX::num2str('+ val +','+ wid +','+ dec +','+ fmt +')', Blockly.JavaScript.ORDER_ATOMIC];
+	return ['PRISMFX::num2str('+ val +','+ wid +','+ dec +','+ fmt +')', Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 Blockly.JavaScript['prismfx.initplot'] = function(block) {
@@ -78,28 +78,26 @@ Blockly.JavaScript['prismfx.initplot'] = function(block) {
 	var max = Blockly.JavaScript.valueToCode(block, 'max', Blockly.JavaScript.ORDER_ASSIGNMENT) || 'NAN';	// defaults to 'Not A Number', plot will auto range
 	var dex = block.getFieldValue("dec");
 	var col = Blockly.JavaScript.valueToCode(block, 'col', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0xfffffa';	// default will be changed to R, G, or B
-	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').initPlot(' + ind + ',' + nam + ',' + unt + ',' + min + ',' + max + ',' + dex + ',' + col +');\n';
+	return 'DEV_SPI.PRISMFX(' + block.getFieldValue('ADDRESS') + ').initPlot(' + ind + ',' + nam + ',' + unt + ',' + min + ',' + max + ',' + dex + ',' + col +');\n';
 };
 
 Blockly.JavaScript['prismfx.plotdata'] = function(block) {
 	var v1 = Blockly.JavaScript.valueToCode(block, 'v1', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var v2 = Blockly.JavaScript.valueToCode(block, 'v2', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var v3 = Blockly.JavaScript.valueToCode(block, 'v3', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').plotPoint(' + v1 + ',' + v2 + ',' + v3 + ');\n';
+	return 'DEV_SPI.PRISMFX(' + block.getFieldValue('ADDRESS') + ').plotPoint(' + v1 + ',' + v2 + ',' + v3 + ');\n';
 };
 
 Blockly.JavaScript['prismfx.image'] = function(block) {
 	var x   = Blockly.JavaScript.valueToCode(block, 'X', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var y   = Blockly.JavaScript.valueToCode(block, 'Y', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
 	var img = block.getFieldValue("img");
-	return 'DEV_SPI.PrismFX(' + block.getFieldValue('ADDRESS') + ').drawImage(' + x + ',' + y + ',' + img +');\n';
+	return 'DEV_SPI.PRISMFX(' + block.getFieldValue('ADDRESS') + ').drawImage(' + x + ',' + y + ',' + img +');\n';
 };
 
-Blockly.JavaScript['prismfx.ColorRGB'] = function(block) {
-//	var fore = Blockly.JavaScript.valueToCode(block, 'Fore', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0xffffff';	// default white
-	let red  =  Blockly.JavaScript.valueToCode(block, 'Red'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	let green  = Blockly.JavaScript.valueToCode(block, 'Blue'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	let blue  = Blockly.JavaScript.valueToCode(block, 'Green'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
-	let num = Number(red) + Number(green) + Number(blue);
-	return [num, Blockly.JavaScript.ORDER_ATOMIC];
+Blockly.JavaScript['prismfx.color_rgb'] = function(block) {
+	let red    =  Blockly.JavaScript.valueToCode(block, 'Red'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	let green  = Blockly.JavaScript.valueToCode(block , 'Green', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	let blue   = Blockly.JavaScript.valueToCode(block , 'Blue', Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	return ['PRISMFX::colorRGB('+ red +','+ green +','+ blue +')', Blockly.JavaScript.ORDER_ATOMIC];
 };
