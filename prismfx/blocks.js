@@ -144,6 +144,24 @@ Blockly.Blocks['prismfx.point'] = {
 	  this.setHelpUrl(Blockly.Msg.PRISMFX_TRIANGLE_HELPURL);
   }};
   
+  Blockly.Blocks['prismfx.circle'] = {
+	init: function() {
+	  prismfx_init(this);
+	  this.appendDummyInput().appendField(Blockly.Msg.PRISMFX_CIRCLE_TITLE);
+	  this.appendValueInput("X1").setCheck("Number").appendField(Blockly.Msg.PRISMFX_X1);
+	  this.appendValueInput("Y1").setCheck("Number").appendField(Blockly.Msg.PRISMFX_Y1);
+	  this.appendValueInput("r").setCheck("Number").appendField(Blockly.Msg.PRISMFX_R);
+	  this.appendValueInput("COLOR").setCheck("Number").appendField(Blockly.Msg.PRISMFX_Color);
+	  this.appendDummyInput().appendField(Blockly.Msg.PRISMFX_Fill).appendField(new Blockly.FieldDropdown(
+		[ [ Blockly.Msg.PRISMFX_Fill, "true" ], [ Blockly.Msg.PRISMFX_Outline, "false" ] ]), "Fill");
+	  this.setInputsInline(true);
+	  this.setPreviousStatement(true, null);
+	  this.setNextStatement(true, null);
+	  this.setColour(150);
+	  this.setTooltip(Blockly.Msg.PRISMFX_CIRCLE_TOOLTIP);
+	  this.setHelpUrl(Blockly.Msg.PRISMFX_CIRCLE_HELPURL);
+  }};
+
 Blockly.Blocks['prismfx.picker'] = {
   init: function() {
     this.appendDummyInput()

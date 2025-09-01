@@ -7,6 +7,7 @@ Blockly.Msg.PRISMFX_X               = "X (0-239)";
 Blockly.Msg.PRISMFX_Y               = "Y (0-239)";
 Blockly.Msg.PRISMFX_X1              = "X1 (0-239)";
 Blockly.Msg.PRISMFX_Y1              = "Y1 (0-239)";
+Blockly.Msg.PRISMFX_R               = "r";
 Blockly.Msg.PRISMFX_X2              = "X2 (0-239)";
 Blockly.Msg.PRISMFX_Y2              = "Y2 (0-239)";
 Blockly.Msg.PRISMFX_X3              = "X3 (0-239)";
@@ -58,6 +59,10 @@ Blockly.Msg.PRISMFX_RECT_HELPURL    = "";
 Blockly.Msg.PRISMFX_TRIANGLE_TITLE  = "Draw Triangle:";
 Blockly.Msg.PRISMFX_TRIANGLE_TOOLTIP= "Plot a triangle with vertices (x1,y1), (x2,y2), and (x3,y3)";
 Blockly.Msg.PRISMFX_TRIANGLE_HELPURL= "";
+
+Blockly.Msg.PRISMFX_CIRCLE_TITLE    = "Draw Circle:";
+Blockly.Msg.PRISMFX_CIRCLE_TOOLTIP  = "Plot a circle with the center (x1,y1), and Radius r";
+Blockly.Msg.PRISMFX_CIRCLE_HELPURL  = "";
 
 Blockly.Msg.PRISMFX_PICKER_TOOLTIP  = "Color picker";
 Blockly.Msg.PRISMFX_PICKER_HELPURL  = "";

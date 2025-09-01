@@ -7,6 +7,7 @@ Blockly.Msg.PRISMFX_X               = "X (0-239)";
 Blockly.Msg.PRISMFX_Y               = "Y (0-239)";
 Blockly.Msg.PRISMFX_X1              = "X1 (0-239)";
 Blockly.Msg.PRISMFX_Y1              = "Y1 (0-239)";
+Blockly.Msg.PRISMFX_R               = "r";
 Blockly.Msg.PRISMFX_X2              = "X2 (0-239)";
 Blockly.Msg.PRISMFX_Y2              = "Y2 (0-239)";
 Blockly.Msg.PRISMFX_X3              = "X3 (0-239)";
@@ -58,6 +59,10 @@ Blockly.Msg.PRISMFX_RECT_HELPURL    = "";
 Blockly.Msg.PRISMFX_TRIANGLE_TITLE  = "วาดสามเหลี่ยม:";
 Blockly.Msg.PRISMFX_TRIANGLE_TOOLTIP= "วางสามเหลี่ยมโดยมีจุดยอด (x1,y1), (x2,y2), และ (x3,y3)";
 Blockly.Msg.PRISMFX_TRIANGLE_HELPURL= "";
+
+Blockly.Msg.PRISMFX_CIRCLE_TITLE    = "วาดวงกลม:";
+Blockly.Msg.PRISMFX_CIRCLE_TOOLTIP  = "วาดวงกลมโดยใช้จุดศูนย์กลาง (x1,y1), and รัศมี r";
+Blockly.Msg.PRISMFX_CIRCLE_HELPURL  = "";
 
 Blockly.Msg.PRISMFX_PICKER_TOOLTIP  = "ตัวเลือกสี";
 Blockly.Msg.PRISMFX_PICKER_HELPURL  = "";

@@ -56,6 +56,15 @@ Blockly.JavaScript['prismfx.triangle'] = function(block) {
 	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').triangle('+x1+','+y1+','+x2+','+y2+','+x3+','+y3+','+col+','+fil+');\n';
 };
 	
+Blockly.JavaScript['prismfx.circle'] = function(block) {
+	var x1  = Blockly.JavaScript.valueToCode(block, 'X1'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	var y1  = Blockly.JavaScript.valueToCode(block, 'Y1'     , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	var r   = Blockly.JavaScript.valueToCode(block, 'r'   	 , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	var col = Blockly.JavaScript.valueToCode(block, 'COLOR'  , Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
+	var fil = block.getFieldValue('Fill');
+	return 'DEV_SPI.PRISMFX('+block.getFieldValue('ADDRESS')+').circle('+x1+','+y1+','+r+','+col+','+fil+');\n';
+}; 
+
 Blockly.JavaScript['prismfx.picker'] = function(block) {
 	var col = block.getFieldValue('COLOR');
 	var num = parseInt(col.substring(1),16); 

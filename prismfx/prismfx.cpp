@@ -234,14 +234,92 @@ void PRISMFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
     }
 }
 
-void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint16_t color, bool fill){
-	drawLine(x1,y1,x2,y2,color);
-	drawLine(x2,y2,x3,y3,color);
-	drawLine(x3,y3,x1,y1,color);
-	if( ! fill )	return;
+//TODO Fill triangle
+void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
+                           uint16_t x2, uint16_t y2,
+                           uint16_t x3, uint16_t y3,
+                           uint16_t color, bool fill) {
+    if (fill) {
+        // ---- Filled Triangle ----
+        // Sort vertices by Y (y1 <= y2 <= y3)
+        if (y2 < y1) { uint16_t t; t = y1; y1 = y2; y2 = t; t = x1; x1 = x2; x2 = t; }
+        if (y3 < y1) { uint16_t t; t = y1; y1 = y3; y3 = t; t = x1; x1 = x3; x3 = t; }
+        if (y3 < y2) { uint16_t t; t = y2; y2 = y3; y3 = t; t = x2; x2 = x3; x3 = t; }
+
+        // Helper function to interpolate X
+        auto edgeInterp = [](uint16_t x0, uint16_t y0,
+                             uint16_t x1, uint16_t y1,
+                             uint16_t y) -> int16_t {
+            if (y1 == y0) return x0;
+            return x0 + (int32_t)(x1 - x0) * (int32_t)(y - y0) / (int32_t)(y1 - y0);
+        };
+
+        // Upper part
+        for (uint16_t y = y1; y <= y2; y++) {
+            int16_t xa = edgeInterp(x1, y1, x3, y3, y);
+            int16_t xb = edgeInterp(x1, y1, x2, y2, y);
+            if (xa > xb) { int16_t tmp = xa; xa = xb; xb = tmp; }
+            drawLine(xa, y, xb, y, color);
+        }
+
+        // Lower part
+        for (uint16_t y = y2; y <= y3; y++) {
+            int16_t xa = edgeInterp(x1, y1, x3, y3, y);
+            int16_t xb = edgeInterp(x2, y2, x3, y3, y);
+            if (xa > xb) { int16_t tmp = xa; xa = xb; xb = tmp; }
+            drawLine(xa, y, xb, y, color);
+        }
+    } else {
+        // ---- Outline only ----
+        drawLine(x1, y1, x2, y2, color);
+        drawLine(x2, y2, x3, y3, color);
+        drawLine(x3, y3, x1, y1, color);
+        return;
+    }
 }
 
+
+
+
+
 // TODO drawCircle
+
+void PRISMFX::drawCircle(uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, bool fill) {
+    int16_t x = 0;
+    int16_t y = r;
+    int16_t d = 3 - 2 * r;
+
+    while (y >= x) {
+        if (fill) {
+            // Draw horizontal spans instead of single pixels
+            drawLine(x1 - x, y1 - y, x1 + x, y1 - y, color);
+            drawLine(x1 - y, y1 - x, x1 + y, y1 - x, color);
+            drawLine(x1 - y, y1 + x, x1 + y, y1 + x, color);
+            drawLine(x1 - x, y1 + y, x1 + x, y1 + y, color);
+        } else {
+            // 8-way symmetry
+            drawPixel(x1 + x, y1 + y, color);
+            drawPixel(x1 - x, y1 + y, color);
+            drawPixel(x1 + x, y1 - y, color);
+            drawPixel(x1 - x, y1 - y, color);
+            drawPixel(x1 + y, y1 + x, color);
+            drawPixel(x1 - y, y1 + x, color);
+            drawPixel(x1 + y, y1 - x, color);
+            drawPixel(x1 - y, y1 - x, color);
+        }
+
+        // Update decision variable
+        x++;
+        if (d > 0) {
+            y--;
+            d += 4 * (x - y) + 10;
+        } else {
+            d += 4 * x + 6;
+        }
+    }
+}
+
+
 
 void PRISMFX::drawRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color, bool fill){
 	if(fill){
@@ -487,8 +565,10 @@ void PRISMFX::triangle  (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uin
 }
 
 void PRISMFX::circle  	(uint16_t x1, uint16_t y1, uint16_t r											, uint32_t color, bool fill ){
-// stub for blockly testing
+	drawCircle(x1,y1,r,color565(color),fill);
 }
+// stub for blockly testing
+
 
 // this function should go away. It should be done completely in blockly. We just don't know blockly/js well enough yet.
 char * PRISMFX::num2str(double val, uint8_t wid, uint8_t dig, uint8_t fmt){

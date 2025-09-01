@@ -75,7 +75,8 @@ class PRISMFX : public Device {
 		void drawLine (uint16_t x, uint16_t y, uint16_t x1, uint16_t y1, uint16_t color);
 		void drawPixel(uint16_t x, uint16_t y, uint16_t color);
 		void drawRect (uint16_t x, uint16_t y, uint16_t x1, uint16_t y1, uint16_t color, bool fill);
-		void drawTriangle (uint16_t x, uint16_t y, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color, bool fill);
+		void drawTriangle(uint16_t x1, uint16_t y1,uint16_t x2, uint16_t y2,uint16_t x3, uint16_t y3, uint16_t color, bool fill);
+		void drawCircle (uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, bool fill);
 		void drawChar5x7(char character);
 		void drawStr5x7(char *message);
 		void drawChar9x14(char character);
@@ -104,7 +105,7 @@ class PRISMFX : public Device {
 		void point      (uint16_t x1, uint16_t y1														, uint32_t color);
 		void line		(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2								, uint32_t color);
 		void rectangle  (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2								, uint32_t color, bool fill );
-		void triangle  	(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3	, uint32_t color, bool fill );
+		void triangle   (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3	, uint32_t color, bool fill);
 		void circle  	(uint16_t x1, uint16_t y1, uint16_t r											, uint32_t color, bool fill );
 		static char *num2str	(double val, uint8_t wid, uint8_t dig, uint8_t fmt);
 		void initPlot	(uint8_t index, char *variable, char * units, double min, double max, char decimals, uint32_t color);
