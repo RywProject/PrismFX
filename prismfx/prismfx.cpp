@@ -234,7 +234,6 @@ void PRISMFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
     }
 }
 
-//TODO Fill triangle
 void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
                            uint16_t x2, uint16_t y2,
                            uint16_t x3, uint16_t y3,
@@ -277,12 +276,6 @@ void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
         return;
     }
 }
-
-
-
-
-
-// TODO drawCircle
 
 void PRISMFX::drawCircle(uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, bool fill) {
     int16_t x = 0;
@@ -567,10 +560,7 @@ void PRISMFX::triangle  (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uin
 void PRISMFX::circle  	(uint16_t x1, uint16_t y1, uint16_t r											, uint32_t color, bool fill ){
 	drawCircle(x1,y1,r,color565(color),fill);
 }
-// stub for blockly testing
 
-
-// this function should go away. It should be done completely in blockly. We just don't know blockly/js well enough yet.
 char * PRISMFX::num2str(double val, uint8_t wid, uint8_t dig, uint8_t fmt){
 	static char buf[40], *p; // buffer for results
 	if( wid > sizeof(buf) - 1)	wid = sizeof(buf) - 1;
