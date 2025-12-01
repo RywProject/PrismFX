@@ -12,7 +12,12 @@
 #include "image4.h"	// default: KidBright Monkey
 
 // 26 is out OUT1, 27 is OUT2, 0 is default
-#define CS_PIN	GPIO_NUM_0
+#define USE_SPI_CHAIN
+#define CS_PIN GPIO_NUM_0
+// or
+//#define CS_PIN GPIO_NUM_26
+//#define DC_PIN GPIO_NUM_27
+
 const uint16_t BUFFER_SIZE = 32;	// max number of bytes that can sent with spi->write
 
 // ST7789 initialization commands and data
@@ -43,11 +48,11 @@ static const char cmdSize[]={sizeof(cmd0),sizeof(cmd1),sizeof(cmd2),sizeof(cmd3)
 PRISMFX::PRISMFX(int dev_addr) {
 	channel = 0;
 	address = dev_addr;
-//	printf("new PrismFX object %p\n", this);
+	printf("new PrismFX object %p\n", this);
 }
 
 void PRISMFX::init(void) {
-//	printf("init %02x %p\n", address, this);
+	printf("init %02x %p\n", address, this);
 	state = s_detect;
 	mcpPort = MCP23S17_REG_GPIOA;		// varies by display if multiple displays
 	acmd = 0xcf;						// which MCP23S17 IOs are connected to the display
@@ -77,7 +82,8 @@ void PRISMFX::init(void) {
 // HARDWARE OUTPUT FUNCTIONS (There are no hardware input functions)
 
 esp_err_t PRISMFX::wrMCP(uint8_t reg, uint8_t val){		// configures the MCP23S17 output for the St7789 RST, DAT, & CS pins
-	esp_err_t rc;
+	esp_err_t rc = ESP_OK;
+#ifdef USE_SPI_CHAIN
 	uint8_t data[3];
 	data[0] = address << 1;
 	data[1] = reg;
@@ -105,31 +111,52 @@ Neither of these solutions is faster than the other. drawPixel takes about same 
 #if CS_PIN == 0
 	if(val != 0xff)		// if true then there is no intention of writing to the ST7789 display
 		gpio_config(&io_conf_0in);	// change pin 0 to an input fo ST7789 writes
-#endif
+#endif	// #if CS_PIN == 0
+#endif  // #ifdef USE_SPI_CHAIN
 	return rc;
 }
 
 // these next 3 functions are for SPI writes to the ST7789 
 void PRISMFX::writecommand(uint8_t cmd){	// sets up ST7789 pins using the MCP23S17, then send command to ST7789
-	if(!CMD_SET)	wrMCP(mcpPort, acmd);	// if C/D control is not already set, then set it
+#ifdef USE_SPI_CHAIN
+	if(!CMD_SET)	wrMCP(mcpPort, acmd);	// if C/D control is not already set then set it
+#else	
+	gpio_set_level(DC_PIN, 1);				// set up to receive command 
+	gpio_set_level(CS_PIN, 1);				// chip selected
+#endif
 	spi->write(channel, address, &cmd, 1);	// send the command byte
 }
 
 void PRISMFX::writedata(uint8_t data){		// sets up ST7789 pins using the MCP23S17, then 1 byte of data to ST7789
+#ifdef USE_SPI_CHAIN
 	if( CMD_SET)	wrMCP(mcpPort, adat);	// if C/D conntrol is not set to D, then set it so
+#else	
+	gpio_set_level(DC_PIN, 0);				// set up to receive data
+	gpio_set_level(CS_PIN, 1);				// chip selected
+#endif
  	spi->write(channel, address, &data, 1);	// send the data byte
 }
 
 void PRISMFX::sendCnD(uint8_t cmd, uint8_t * data, uint16_t dCnt){
-	if(!CMD_SET)	wrMCP(mcpPort, acmd);	// DC lo, CS lo
+#ifdef USE_SPI_CHAIN
+	if(!CMD_SET)	wrMCP(mcpPort, acmd);	// if C/D control is not already set then set it
+#else	
+	gpio_set_level(DC_PIN, 1);				// set up to receive command 
+	gpio_set_level(CS_PIN, 1);				// chip selected
+#endif
 	spi->write(channel, address, &cmd, 1);	// cmd
-	if( CMD_SET)	wrMCP(mcpPort, adat);	// DC hi, CS lo
+
+#ifdef USE_SPI_CHAIN
+	if( CMD_SET)	wrMCP(mcpPort, adat);	// if C/D conntrol is not set to D, then set it so
+#else	
+	gpio_set_level(DC_PIN, 0);				// set up to receive data
+#endif
 	spi->write(channel, address, data, dCnt);// data
 }
 
 // sets up ST7789 to receive bulk data, 2 * (1+x1-x0) * (1+y1-y0) bytes at specific coordinates
 // working to optimize this function as it is called often, 1x/point, 1x/character and the hardware is slow
-void PRISMFX::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2){
+void PRISMFX::setAddrWindow(int16_t x1, int16_t y1, int16_t x2, int16_t y2){
 	if(x1 > x2){
 		uint16_t temp = x1;
 		x1 = x2;
@@ -148,12 +175,16 @@ void PRISMFX::setAddrWindow(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2){
 	sendCnD(cmdCol, buf, 4);
 	buf[0] = y1>>8; buf[1] = y1&255; buf[2] = y2>>8; buf[3] = y2&255;	// horizontal bounds
 	sendCnD(cmdRow, buf, 4);
-	if(!CMD_SET)	wrMCP(mcpPort, acmd);	// DC lo, CS lo
-	spi->write(channel, address, &cmdColor, 1);	// now prepared to receive color data
+	writecommand(cmdColor);
+#ifdef USE_SPI_CHAIN
+	if( CMD_SET)	wrMCP(mcpPort, adat);	// if C/D conntrol is not set to D, then set it so
+#else	
+	gpio_set_level(DC_PIN, 0);				// setup to receive color data
+#endif
 }
 
 void PRISMFX::bufferOut(uint8_t *bufr, uint32_t sz){	// for sending bulk data in BUFFER_SIZE chunks
-	if( CMD_SET)	wrMCP(mcpPort, adat);  				// DC hi, CS lo
+//	if( CMD_SET)	wrMCP(mcpPort, adat);  				// DC hi, CS lo
 	while(sz > BUFFER_SIZE){							// for all BUFFER_SIZE chunks
 		spi->write(channel, address, bufr, BUFFER_SIZE);
 		bufr += BUFFER_SIZE;
@@ -161,53 +192,61 @@ void PRISMFX::bufferOut(uint8_t *bufr, uint32_t sz){	// for sending bulk data in
 	}
 	if(sz)												// remainder of buffer, if any
 		spi->write(channel, address, bufr, sz);
-	wrMCP(mcpPort, 0xff);      							// rst, dc, & cs all high
+#ifdef USE_SPI_CHAIN
+	wrMCP(mcpPort, 0xff);		// clear CS
+#else	
+	gpio_set_level(CS_PIN, 0);	// clear CS
+#endif
 }
 
 // Geometric Functions: Point, Line, Circle, Rectange, Bitmap, maybe triangle?
 
-void PRISMFX::drawPixel(uint16_t x, uint16_t y, uint16_t color){
-	if(x > _W || y > _H)  return;		// when cropping a single pixel, the result is a pixel or no pixel
+void PRISMFX::drawPixel(int16_t x, int16_t y, uint16_t color){
+//	printf("Point (%d,%d)\n",x,y);
+	if(x>_W || y>_H || x<0 || y<0)  return;	// when cropping a single pixel, the result is a pixel or no pixel
 	setAddrWindow(x, y, x, y);
 	uint8_t buf[2];	buf[0] = color>>8;	buf[1] = color & 255;
 	bufferOut(buf, sizeof(buf));
 }
 
-void PRISMFX::drawLineH(uint16_t x, uint16_t y, uint16_t w, uint16_t color){
+void PRISMFX::drawLineH(int16_t x, int16_t y, int16_t x1, int16_t y1, uint16_t color){
+//	printf("LineH (%d,%d) (%d,%d) ", x,y,x1,y1);
+	if(y<0 || y>_H)	return;	// entire line is out of bounds, high or low
+	int a = x <0 ? 0 : (x >_W ? _W : x );	// clipping
+	int b = x1<0 ? 0 : (x1>_W ? _W : x1);
+	int w = abs(b-a);
+//	printf("w=%d (%d,%d) (%d,%d)\n",w,a,y,b,y);
 	uint8_t buf[w*2], *p=buf;
 	for(int i=0; i<w; i++){
 		*p++ = color >> 8;
 		*p++ = color & 255;
 	}
-	setAddrWindow(x, y, x+w, y);		// wide, short (1 pixel high) rectangle
+	setAddrWindow(a, y, b, y);		// wide, short (1 pixel high) rectangle
 	bufferOut( buf, sizeof(buf));
 }
 
-void PRISMFX::drawLineV(uint16_t x, uint16_t y, uint16_t h, uint16_t color){
-	uint8_t buf[h*2], *p=buf;			// max size will be 240x2
+void PRISMFX::drawLineV(int16_t x, int16_t y, int16_t x1, int16_t y1, uint16_t color){
+//	printf("LineV (%d,%d) (%d,%d) ", x,y,x1,y1);
+	if(x<0 || x>_H)	return;	// entire line is out of bounds, left or right
+	int a = y <0 ? 0 : (y >_H ? _H : y );	// clipping
+	int b = y1<0 ? 0 : (y1>_H ? _H : y1);
+	int h = abs(b-a);
+//	printf("h=%d (%d,%d) (%d,%d)\n",h,x,a,x,b);
+	uint8_t buf[h*2], *p=buf;
 	for(int i=0; i<h; i++){
 		*p++ = color >> 8;
 		*p++ = color & 255;
 	}
-	setAddrWindow(x, y, x, y+h);		// tall, thin (1 pixel wide) rectangle 
+	setAddrWindow(x, a, x, b);		// tall, thin (1 pixel wide) rectangle 
 	bufferOut( buf, sizeof(buf));
 }
 
-void PRISMFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint16_t color){
+void PRISMFX::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1, uint16_t color){
+//	printf("Line  (%d,%d) (%d,%d)\n", x0,y0,x1,y1);
     if (x0 == x1) {
-        // vertical line
-        uint16_t height = y1 > y0 ? y1 - y0 + 1 : y0 - y1 + 1;
-        if (y1 > y0)
-            drawLineV(x0, y0, height, color);
-        else
-            drawLineV(x0, y1, height, color);
+            drawLineV(x0, y0, x1, y1, color);
     } else if (y0 == y1) {
-        // horizontal line
-        uint16_t width = x1 > x0 ? x1 - x0 + 1 : x0 - x1 + 1;
-        if (x1 > x0)
-            drawLineH(x0, y0, width, color);
-        else
-            drawLineH(x1, y0, width, color);
+            drawLineH(x0, y0, x1, y1, color);
     } else {
         //oblique lines
         int16_t dx = x1 - x0;
@@ -234,27 +273,27 @@ void PRISMFX::drawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint1
     }
 }
 
-void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
-                           uint16_t x2, uint16_t y2,
-                           uint16_t x3, uint16_t y3,
+void PRISMFX::drawTriangle(int16_t x1, int16_t y1,
+                           int16_t x2, int16_t y2,
+                           int16_t x3, int16_t y3,
                            uint16_t color, bool fill) {
     if (fill) {
         // ---- Filled Triangle ----
         // Sort vertices by Y (y1 <= y2 <= y3)
-        if (y2 < y1) { uint16_t t; t = y1; y1 = y2; y2 = t; t = x1; x1 = x2; x2 = t; }
-        if (y3 < y1) { uint16_t t; t = y1; y1 = y3; y3 = t; t = x1; x1 = x3; x3 = t; }
-        if (y3 < y2) { uint16_t t; t = y2; y2 = y3; y3 = t; t = x2; x2 = x3; x3 = t; }
+        if (y2 < y1) { int16_t t; t = y1; y1 = y2; y2 = t; t = x1; x1 = x2; x2 = t; }
+        if (y3 < y1) { int16_t t; t = y1; y1 = y3; y3 = t; t = x1; x1 = x3; x3 = t; }
+        if (y3 < y2) { int16_t t; t = y2; y2 = y3; y3 = t; t = x2; x2 = x3; x3 = t; }
 
         // Helper function to interpolate X
-        auto edgeInterp = [](uint16_t x0, uint16_t y0,
-                             uint16_t x1, uint16_t y1,
-                             uint16_t y) -> int16_t {
+        auto edgeInterp = [](int16_t x0, int16_t y0,
+                             int16_t x1, int16_t y1,
+                             int16_t y) -> int16_t {
             if (y1 == y0) return x0;
             return x0 + (int32_t)(x1 - x0) * (int32_t)(y - y0) / (int32_t)(y1 - y0);
         };
 
         // Upper part
-        for (uint16_t y = y1; y <= y2; y++) {
+        for (int16_t y = y1; y <= y2; y++) {
             int16_t xa = edgeInterp(x1, y1, x3, y3, y);
             int16_t xb = edgeInterp(x1, y1, x2, y2, y);
             if (xa > xb) { int16_t tmp = xa; xa = xb; xb = tmp; }
@@ -262,7 +301,7 @@ void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
         }
 
         // Lower part
-        for (uint16_t y = y2; y <= y3; y++) {
+        for (int16_t y = y2; y <= y3; y++) {
             int16_t xa = edgeInterp(x1, y1, x3, y3, y);
             int16_t xb = edgeInterp(x2, y2, x3, y3, y);
             if (xa > xb) { int16_t tmp = xa; xa = xb; xb = tmp; }
@@ -277,9 +316,9 @@ void PRISMFX::drawTriangle(uint16_t x1, uint16_t y1,
     }
 }
 
-void PRISMFX::drawCircle(uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, bool fill) {
+void PRISMFX::drawCircle(int16_t x1, int16_t y1, uint16_t r, uint16_t color, bool fill) {
     int16_t x = 0;
-    int16_t y = r;
+    int16_t y = r < _H ? r :_H;
     int16_t d = 3 - 2 * r;
 
     while (y >= x) {
@@ -312,13 +351,17 @@ void PRISMFX::drawCircle(uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, b
     }
 }
 
-
-
-void PRISMFX::drawRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t color, bool fill){
+void PRISMFX::drawRect(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color, bool fill){
 	if(fill){
-		uint8_t bufr[BUFFER_SIZE], *p = bufr;		// max number of bytes that can be sent over SPI bus
-		uint16_t i=(1+x2-x1)*(1+y2-y1);
-		setAddrWindow(x1, y1, x2, y2);
+		uint8_t bufr[BUFFER_SIZE], *p = bufr;	// max number of bytes that can be sent over SPI bus
+		int a = x1<0 ? 0 : (x1>_W ? _W : x1 );	// clipping
+		int b = y1<0 ? 0 : (y1>_H ? _H : y1);
+		int c = x2<0 ? 0 : (x2>_W ? _W : x2 );	// clipping
+		int d = y2<0 ? 0 : (y2>_H ? _H : y2);
+		uint16_t i=(1+abs(a-c))*(1+abs(b-d));
+//		printf("Rect  (%d,%d) (%d,%d) pts=%d\n)", x1,y1,x2,y2,i);
+//		printf("Rect2 (%d,%d) (%d,%d)\n)", a,b,c,d);
+		setAddrWindow(a, b, c, d);
 		wrMCP(mcpPort, adat);  // dc high, cs active (low)
 		while(i--){
 			*p++ = color >> 8;
@@ -329,12 +372,16 @@ void PRISMFX::drawRect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint1
 			}
 		}
 		if(p-bufr)	spi->write(channel, address, bufr, p-bufr);
-		wrMCP(mcpPort, 0xff);        // rst, dc, & cs all high
+#ifdef USE_SPI_CHAIN
+		wrMCP(mcpPort, 0xff);	// clear CS
+#else	
+		gpio_set_level(CS_PIN, 0);				// clear CS
+#endif
 	}else{
-		drawLineH(x1,y1,1+x2-x1,color);
-		drawLineH(x1,y2,1+x2-x1,color);
-		drawLineV(x1,y1,1+y2-y1,color);
-		drawLineV(x2,y1,1+y2-y1,color);
+		drawLineH(x1,y1,x2,y1,color);
+		drawLineH(x1,y2,x2,y2,color);
+		drawLineV(x1,y1,x1,y2,color);
+		drawLineV(x2,y1,x2,y2,color);
 	}
 }
 
@@ -357,8 +404,7 @@ void PRISMFX::drawChar5x7(char character){
 		}
 	}else{						// fill background and foreground
 		if(character == '\n'){	// if a newline
-			for( i=0; i<8; i++)	// clear to the end of the line
-				drawLineH(colS*6, rowS*8+i, 240-colS*6, backC);
+			drawRect(colS*6, rowS*8, _W, rowS*8+7, backC, true);
 		}else{					// printable character
 			for(j=0; j<8; j++){								// for each line
 				for(i=0; i<6; i++){							// for each column
@@ -402,8 +448,7 @@ void PRISMFX::drawChar9x14(char character){
 		if( colM < 24 )	return;
 	}else{
 		if(character == '\n'){			// if a newline character
-			for(int  i=0; i<15; i++)	// clear to the end of the line
-				drawLineH(colM*10, rowM*15+i, 240-colS*10, backC);
+			drawRect(colM*10, rowM*15, _W, rowM*15+14, backC, true);
 		}else{							// printable character - not transparent
 			for(j=0; j<10; j++){		// fill inter line gap
 				buf[14][j][0] = backC >> 8;
@@ -447,7 +492,7 @@ void PRISMFX::process(Driver *drv) {
 
 	switch (state) {
 		case s_detect:
-//			printf("s_detect-->");
+			printf("s_detect-->\n");
 			// detect spi device
 			state = s_error;														// assume failure
 			if (spi->detect(channel, address) == ESP_OK) {
@@ -483,10 +528,13 @@ void PRISMFX::process(Driver *drv) {
 				tickcnt = get_tickcnt();
 				while(!is_tickcnt_elapsed(tickcnt, 120));	//	delay(120);
 
-				writecommand(0x29);    	//Display on
-				wrMCP(mcpPort, 0xff);	// CS off
-
-				state = s_cmd_init;					// MCP23S17 initialized
+				writecommand(0x29);    		//Display on
+#ifdef USE_SPI_CHAIN
+				wrMCP(mcpPort, 0xff);		// clear CS
+#else	
+				gpio_set_level(CS_PIN, 0);	// clear CS
+#endif
+				state = s_cmd_init;			// MCP23S17 initialized
 			}
 			break;
 
@@ -527,15 +575,15 @@ void PRISMFX::print(uint8_t col, uint8_t row, char *message, uint8_t siz) {
 	}
 }
 
-void PRISMFX::point(uint16_t x1, uint16_t y1, uint32_t color){
+void PRISMFX::point(int16_t x1, int16_t y1, uint32_t color){
 	drawPixel(x1, y1, color565(color));
 }
 
-void PRISMFX::line(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color){
+void PRISMFX::line(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color){
 	drawLine(x1, y1, x2, y2, color565(color));
 }
 
-void PRISMFX::rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint32_t color, bool fill){
+void PRISMFX::rectangle(int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint32_t color, bool fill){
 	drawRect(x1, y1, x2, y2, color565(color), fill);
 }
 
@@ -553,11 +601,11 @@ void PRISMFX::setTextColor(uint32_t foreground, uint32_t background){
 	backC = color565(background);
 }
 
-void PRISMFX::triangle  (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3	, uint32_t color, bool fill ){
+void PRISMFX::triangle  (int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3	, uint32_t color, bool fill ){
 	drawTriangle(x1,y1,x2,y2,x3,y3,color565(color),fill);
 }
 
-void PRISMFX::circle  	(uint16_t x1, uint16_t y1, uint16_t r											, uint32_t color, bool fill ){
+void PRISMFX::circle  	(int16_t x1, int16_t y1, uint16_t r											, uint32_t color, bool fill ){
 	drawCircle(x1,y1,r,color565(color),fill);
 }
 
@@ -594,7 +642,7 @@ uint16_t PRISMFX::color565(uint32_t rgb) {	// convert 24 bit RGB888 to 16 bit RG
 }
 
 void PRISMFX::initPlot(uint8_t index, char * variable, char * units, double plotMin, double plotMax, char decimals, uint32_t color ){
-	if(index > 2)	return;		// cannot do this
+	if(index > 2)	return;							// cannot do this
 	memset(&pd[index], 0, sizeof(plotData));		// zero out the entire structure
 	char tmp[8];
 
@@ -657,7 +705,6 @@ void PRISMFX::plotPoint(double v1, double v2, double v3){	// new data point
 	float min, max, oldmin[3], oldmax[3];
 	char tmp[8];
 	int y;
-
 // output data to serial monitor. This can be copied and pasted into a CSV file.
 /*
 	if(pdCnt == 0)					// write header for CSV file
@@ -722,8 +769,8 @@ void PRISMFX::plotPoint(double v1, double v2, double v3){	// new data point
 		foreC = pd[2].color;	snprintf(tmp, 8, pd[2].format, pd[2].min);	drawStr9x14(tmp);
 
 		drawRect(0, 64, 239, 164, C_BLACK, true);		// clear graph
-		for(int i=64; i<=164; i+=20)	drawLineH(0,i ,240,0x2084);	// horizontal grid
-		for(int i=0 ; i<=200; i+=40)	drawLineV(i,64,101,0x2084);	// vertical grid
+		for(int i=64; i<=164; i+=20)	drawLineH(0,i ,239,i,0x2084);	// horizontal grid
+		for(int i=0 ; i<=200; i+=40)	drawLineV(i,64,i,164,0x2084);	// vertical grid
 		float denominator[3];			// TODO combine rgb pixels if point overlap
 		for(int j=0; j<3; j++)
 			denominator[j] = 100.0 / (pd[j].max - pd[j].min);
@@ -743,9 +790,9 @@ void PRISMFX::plotPoint(double v1, double v2, double v3){	// new data point
 		if(y>100)	y=100;
 		drawPixel(pdPos, 164-y, pd[j].color);
 	}
-	drawLineV((pdPos+1)%240, 64, 101, C_BLACK);	// cursor to show end/start of new data
-	drawLineV((pdPos+2)%240, 64, 101, C_CYAN);
-	drawLineV((pdPos+3)%240, 64, 101, C_BLACK);
+	drawLineV((pdPos+1)%240, 64, (pdPos+1)%240, 164, C_BLACK);	// cursor to show end/start of new data
+	drawLineV((pdPos+2)%240, 64, (pdPos+2)%240, 164, C_CYAN );
+	drawLineV((pdPos+3)%240, 64, (pdPos+3)%240, 164, C_BLACK);
 
 	foreC = saveFC; backC = saveBC; colM = saveCM; rowM = saveRM;
 	pdPos++;
@@ -779,13 +826,16 @@ void PRISMFX::drawImage(uint16_t x, uint16_t y, uint8_t imageID){
 		if(p>=limit)	break;
 		spi->write(channel, address, bufr, i);
 	}
-	wrMCP(mcpPort, 0xff);      			// rst, dc, & cs all high - deselect display
+#ifdef USE_SPI_CHAIN
+	wrMCP(mcpPort, 0xff);		// clear CS
+#else	
+	gpio_set_level(CS_PIN, 0);	// clear CS
+#endif
 }
-
 
 // Unused but seemingly required functions
 
-int  PRISMFX::prop_count(void) 						{	return false;}	// not supported
+int  PRISMFX::prop_count(void) 						{	return 0;}		// not supported
 bool PRISMFX::prop_name (int index, char *name  ) 	{	return false;}	// not supported
 bool PRISMFX::prop_unit (int index, char *unit  ) 	{	return false;}	// not supported
 bool PRISMFX::prop_attr (int index, char *attr  ) 	{	return false;}	// not supported

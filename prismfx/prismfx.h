@@ -59,8 +59,8 @@ class PRISMFX : public Device {
 		plotData pd[3];
 		uint16_t pdPos, pdCnt;
 
-		uint16_t rowS, colS, foreC, backC;
-		uint8_t rowM, colM, rowC, colC, display_rotation;
+		uint16_t foreC, backC;
+		int8_t rowS, colS, rowM, colM, rowC, colC, display_rotation;
 		uint8_t mcpPort, acmd, adat, arst;
 		bool CMD_SET;	// maintain state of C/D pin to avoid changing it if already in the correct state
 
@@ -69,14 +69,14 @@ class PRISMFX : public Device {
 		void writecommand(uint8_t cmd);
 		void writedata(uint8_t data);
 		void sendCnD(uint8_t cmd, uint8_t * data, uint16_t dCnt);
-		void setAddrWindow(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1);
-		void drawLineV(uint16_t x, uint16_t y, uint16_t h, uint16_t color);
-		void drawLineH(uint16_t x, uint16_t y, uint16_t w, uint16_t color);
-		void drawLine (uint16_t x, uint16_t y, uint16_t x1, uint16_t y1, uint16_t color);
-		void drawPixel(uint16_t x, uint16_t y, uint16_t color);
-		void drawRect (uint16_t x, uint16_t y, uint16_t x1, uint16_t y1, uint16_t color, bool fill);
-		void drawTriangle(uint16_t x1, uint16_t y1,uint16_t x2, uint16_t y2,uint16_t x3, uint16_t y3, uint16_t color, bool fill);
-		void drawCircle (uint16_t x1, uint16_t y1, uint16_t r, uint16_t color, bool fill);
+		void setAddrWindow(int16_t x0, int16_t y0, int16_t x1, int16_t y1);
+		void drawLineV	  (int16_t x , int16_t y , int16_t x1, int16_t y1, uint16_t color);
+		void drawLineH	  (int16_t x , int16_t y , int16_t x1, int16_t y1, uint16_t color);
+		void drawLine 	  (int16_t x , int16_t y , int16_t x1, int16_t y1, uint16_t color);
+		void drawPixel    (int16_t x , int16_t y						 , uint16_t color);
+		void drawRect     (int16_t x , int16_t y , int16_t x1, int16_t y1, uint16_t color, bool fill);
+		void drawTriangle (int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3, uint16_t color, bool fill);
+		void drawCircle   (int16_t x1, int16_t y1, uint16_t r			 , uint16_t color, bool fill);
 		void drawChar5x7(char character);
 		void drawStr5x7(char *message);
 		void drawChar9x14(char character);
@@ -102,15 +102,15 @@ class PRISMFX : public Device {
 		void clear      (uint8_t rotation, uint32_t color);
 		void setTextColor(uint32_t foreground, uint32_t background);
 		void print      (uint8_t col, uint8_t row, char *message, uint8_t siz);
-		void point      (uint16_t x1, uint16_t y1														, uint32_t color);
-		void line		(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2								, uint32_t color);
-		void rectangle  (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2								, uint32_t color, bool fill );
-		void triangle   (uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3	, uint32_t color, bool fill);
-		void circle  	(uint16_t x1, uint16_t y1, uint16_t r											, uint32_t color, bool fill );
-		static char *num2str	(double val, uint8_t wid, uint8_t dig, uint8_t fmt);
+		void point      (int16_t x1, int16_t y1														, uint32_t color);
+		void line		(int16_t x1, int16_t y1, int16_t x2, int16_t y2								, uint32_t color);
+		void rectangle  (int16_t x1, int16_t y1, int16_t x2, int16_t y2								, uint32_t color, bool fill );
+		void triangle   (int16_t x1, int16_t y1, int16_t x2, int16_t y2, int16_t x3, int16_t y3	, uint32_t color, bool fill);
+		void circle  	(int16_t x1, int16_t y1, uint16_t r											, uint32_t color, bool fill );
 		void initPlot	(uint8_t index, char *variable, char * units, double min, double max, char decimals, uint32_t color);
 		void plotPoint	(double v1, double v2, double v3);
 		void drawImage	(uint16_t x1, uint16_t y1, uint8_t imageID);
+		static char *num2str	(double val, uint8_t wid, uint8_t dig, uint8_t fmt);
 		static uint32_t colorRGB	(double r, double g, double b){
 			uint32_t R = r, G = g, B = b;	// convert to ints
 			return ((R & 255) << 8 | (G & 255)) << 8 | (B & 255);
